@@ -2,9 +2,11 @@ import joblib
 import pandas as pd
 from sklearn import metrics, tree
 
+import config
+
 
 def run(fold):
-    df = pd.read_csv("./input/train_folds.csv")
+    df = pd.read_csv(config.TRAINING_FILE)
     df_train = df[df.kfold != fold].reset_index(drop=True)
     df_valid = df[df.kfold == fold].reset_index(drop=True)
 
@@ -23,7 +25,7 @@ def run(fold):
 
     print(f"Fold: {fold}, Accuracy: {accuracy}, F1 Score: {f1_score}")
 
-    joblib.dump(clf, f"./models/model_{fold}.pkl")
+    joblib.dump(clf, f"{config.MODEL_OUTPUT}dt_{fold}.pkl")
 
 
 if __name__ == "__main__":

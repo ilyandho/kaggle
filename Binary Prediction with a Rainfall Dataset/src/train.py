@@ -11,6 +11,7 @@ import model_dispatcher
 
 def run(fold, model):
     df = pd.read_csv(config.TRAINING_FILE)
+    df["row"] = df.index
     # df_train = df[df.kfold != fold].reset_index(drop=True)
     # df_valid = df[df.kfold == fold].reset_index(drop=True)
 
@@ -18,10 +19,10 @@ def run(fold, model):
     df_train = df[df.kfold < fold].reset_index(drop=True)
     df_valid = df[df.kfold == fold].reset_index(drop=True)
 
-    x_train = df_train.drop(columns=["kfold", "rainfall"])
+    x_train = df_train.drop(columns=["kfold", "rainfall", "row"])
     y_train = df_train.rainfall
 
-    x_valid = df_valid.drop(columns=["kfold", "rainfall"])
+    x_valid = df_valid.drop(columns=["kfold", "rainfall", "row"])
     y_valid = df_valid.rainfall
 
     clf = model_dispatcher.models[model]
@@ -46,6 +47,11 @@ def run(fold, model):
     )
     path = "../models/results.csv"
     row.to_csv(path, mode="a", header=not os.path.exists(path), index=False)
+
+    oof = pd.DataFrame(
+        {"row": df_valid["row"], "fold": fold, "y": y_valid, "pred": predict_proba}
+    )
+    oof.to_csv(f"{config.MODEL_OUTPUT}oof_{model}_{fold}.csv", index=False)
 
     print(
         f"Fold: {fold}, Accuracy: {accuracy}, F1 Score: {f1_score}, ROC AUC: {roc_auc}"

@@ -1,3 +1,5 @@
+import argparse
+
 import joblib
 import pandas as pd
 from sklearn import metrics, tree
@@ -29,5 +31,10 @@ def run(fold):
 
 
 if __name__ == "__main__":
-    for fold_ in range(5):
-        run(fold_)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--fold", type=int, required=True, help="Fold number to run")
+    args = parser.parse_args()
+    run(args.fold)
+
+    # for fold_ in range(5):
+    #     run(fold_)
